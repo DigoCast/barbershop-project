@@ -1,0 +1,4 @@
+node_modules/
+app/generated/prisma/
+prisma/seed.ts
+app/_lib/prisma.ts

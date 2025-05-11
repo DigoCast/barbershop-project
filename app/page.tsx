@@ -6,8 +6,11 @@ import Image from "next/image"
 import { Card, CardContent } from "./_components/ui/card"
 import { Badge } from "./_components/ui/badge"
 import { Avatar, AvatarImage } from "./_components/ui/avatar"
+import { db } from "./_lib/prisma"
+import BarbershopItem from "./_components/BarbershopItem"
 
-const Home = () => {
+const Home = async () => {
+  const barbershops = await db.barbershop.findMany({})
   return (
     <div>
       <Header />
@@ -27,32 +30,44 @@ const Home = () => {
             alt="Agende nos melhores com FSW Barber"
             fill
             src="/banner-home.png"
-            className="object-cover rounded-xl h-auto w-auto"
+            className="h-auto w-auto rounded-xl object-cover"
           />
         </div>
 
-        <h2 className="uppercase text-gray-400 font-bold text-xs mt-6 mb-3">agendamentos</h2>
-        <Card className="">
-            <CardContent className="flex justify-between p-0">
-              <div className="flex flex-col gap-2 py-5 pl-5">
-                <Badge className="w-fit p-[6px] bg-[#221C3D] text-primary">Confirmado</Badge>
-                <h3 className="">Corte de cabelo</h3>
-                <div className="flex items-center gap-2">
-                  <Avatar>
-                    <AvatarImage src="https://utfs.io/f/178da6b6-6f9a-424a-be9d-a2feb476eb36-16t.png"/>
-                  </Avatar>
-                  <p>Barber Diego</p>
-                </div>
+        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+          agendamentos
+        </h2>
+        <Card>
+          <CardContent className="flex justify-between p-0">
+            <div className="flex flex-col gap-2 py-5 pl-5">
+              <Badge className="w-fit bg-[#221C3D] p-[6px] text-primary">
+                Confirmado
+              </Badge>
+              <h3 className="font-semibold">Corte de cabelo</h3>
+              <div className="flex items-center gap-2">
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src="https://utfs.io/f/178da6b6-6f9a-424a-be9d-a2feb476eb36-16t.png" />
+                </Avatar>
+                <p className="text-sm">Barber Diego</p>
               </div>
-              
-              <div className="flex flex-col justify-center items-center px-5 border-l-2 border-solid">
-                <p className="text-sm">Maio</p>
-                <p className="text-2xl">10</p>
-                <p className="text-sm">20:36</p>
-              </div>
+            </div>
 
-            </CardContent>
+            <div className="flex flex-col items-center justify-center border-l-2 border-solid px-5">
+              <p className="text-sm">Maio</p>
+              <p className="text-2xl">10</p>
+              <p className="text-sm">20:36</p>
+            </div>
+          </CardContent>
         </Card>
+
+        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+          Recomendados
+        </h2>
+        <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
+          {barbershops.map((barbershop) => (
+            <BarbershopItem key={barbershop.id} barbershop={barbershop} />
+          ))}
+        </div>
       </div>
     </div>
   )
