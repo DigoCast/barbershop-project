@@ -1,12 +1,11 @@
-import { Input } from "./_components/ui/input"
 import Header from "./_components/Header"
 import { Button } from "./_components/ui/button"
-import { SearchIcon } from "lucide-react"
 import Image from "next/image"
 import { db } from "./_lib/prisma"
 import BarbershopItem from "./_components/BarbershopItem"
 import quickSearchOptions from "./_constants/quickSearch"
 import BookingItem from "./_components/BookingItem"
+import SearchBar from "./_components/SearchBar"
 
 const Home = async () => {
   const barbershops = await db.barbershop.findMany({})
@@ -23,17 +22,19 @@ const Home = async () => {
         <h2 className="text-xl font-bold">Olá, Diego!</h2>
         <p>Sábado, 10 de maio.</p>
 
-        <div className="mt-6 flex items-center gap-2">
-          <Input placeholder="Faça sua busca..." />
-          <Button>
-            <SearchIcon />
-          </Button>
+        <div className="mt-6">
+          <SearchBar />
         </div>
 
         <div className="mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
           {quickSearchOptions.map((option) => (
             <Button className="gap-2" variant="secondary" key={option.title}>
-            <Image alt={option.title} src={option.imageUrl} width={16} height={16} />
+              <Image
+                alt={option.title}
+                src={option.imageUrl}
+                width={16}
+                height={16}
+              />
               {option.title}
             </Button>
           ))}
@@ -48,7 +49,7 @@ const Home = async () => {
           />
         </div>
 
-        <BookingItem/>
+        <BookingItem />
 
         <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Recomendados
@@ -68,7 +69,6 @@ const Home = async () => {
           ))}
         </div>
       </div>
-
     </div>
   )
 }
