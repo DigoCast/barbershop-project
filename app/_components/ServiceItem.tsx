@@ -19,9 +19,8 @@ import { createBooking } from "../_actions/createBooking"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
 import { getBookings } from "../_actions/getBookings"
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog"
+import { Dialog, DialogContent } from "./ui/dialog"
 import SignInDialog from "./SignInDialog"
-import { LogInIcon } from "lucide-react"
 
 interface ServiceItemProps {
   service: BarbershopService
@@ -122,7 +121,6 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
       const newDate = set(selectedDay, { minutes: minute, hours: hour })
       await createBooking({
         serviceId: service.id,
-        userId: (data?.user as any).id, // eslint-disable-line
         date: newDate,
       })
       toast.success("Horario Confirmado!")
@@ -275,9 +273,7 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
         </CardContent>
       </Card>
 
-      <Dialog
-        open={signInDialogIsOpen} defaultOpen={false}
-      >
+      <Dialog open={signInDialogIsOpen} defaultOpen={false}>
         <DialogContent className="w-[80%] rounded">
           <SignInDialog />
         </DialogContent>

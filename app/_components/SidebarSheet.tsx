@@ -8,7 +8,7 @@ import quickSearchOptions from "../_constants/quickSearch"
 import Link from "next/link"
 import Image from "next/image"
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog"
-import { signIn, signOut, useSession } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
 import { Avatar, AvatarImage } from "./ui/avatar"
 import SignInDialog from "./SignInDialog"
 
