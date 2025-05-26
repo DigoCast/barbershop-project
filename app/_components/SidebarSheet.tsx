@@ -23,7 +23,7 @@ const SidebarSheet = () => {
 
       <div className="flex items-center justify-between gap-3 border-b border-solid py-5">
         {data?.user ? (
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
             <Avatar>
               <AvatarImage src={data.user.image ?? ""} height={18} width={18} />
             </Avatar>
