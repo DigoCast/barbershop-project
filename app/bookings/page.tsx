@@ -1,9 +1,10 @@
 import { getServerSession } from "next-auth"
 import Header from "../_components/Header"
 import { authOptions } from "../_lib/auth"
-import { db } from "../_lib/prisma"
 import { notFound } from "next/navigation"
 import BookingItem from "../_components/BookingItem"
+import { getConfirmedBookings } from "../_data/getConfirmedBookings"
+import { getConcludedBookings } from "../_data/getConcludedBookings"
 
 const Bookings = async () => {
   const session = await getServerSession(authOptions)
@@ -12,43 +13,9 @@ const Bookings = async () => {
     return notFound()
   }
 
-  const confirmedBookings = await db.booking.findMany({
-    where: {
-      userId: (session?.user as any).id, // eslint-disable-line
-      date: {
-        gte: new Date(),
-      },
-    },
-    include: {
-      service: {
-        include: {
-          barbershop: true,
-        },
-      },
-    },
-    orderBy: {
-      date: "asc",
-    },
-  })
+  const confirmedBookings = await getConfirmedBookings()
 
-  const concludedBookings = await db.booking.findMany({
-    where: {
-      userId: (session?.user as any).id, // eslint-disable-line
-      date: {
-        lt: new Date(),
-      },
-    },
-    include: {
-      service: {
-        include: {
-          barbershop: true,
-        },
-      },
-    },
-    orderBy: {
-      date: "asc",
-    },
-  })
+  const concludedBookings = await getConcludedBookings()
 
   return (
     <div>
