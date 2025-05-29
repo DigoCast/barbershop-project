@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { Barbershop, BarbershopService, Booking } from "../generated/prisma"
+import { Barbershop, BarbershopService, Booking } from "@prisma/client"
 import { Button } from "./ui/button"
 import { Card, CardContent } from "./ui/card"
 import {

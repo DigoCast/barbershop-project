@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { Barbershop } from "../generated/prisma"
+import { Barbershop } from "@prisma/client"
 import { Card, CardContent } from "./ui/card"
 import { Button } from "./ui/button"
 import { Badge } from "./ui/badge"
