@@ -4,7 +4,7 @@ import { endOfDay, startOfDay } from "date-fns"
 import { db } from "../_lib/prisma"
 
 interface GetBookingsProps {
-    serviceId: stringtring
+    serviceId: string
     date: Date
 }
 
