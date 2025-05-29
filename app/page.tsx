@@ -9,6 +9,8 @@ import SearchBar from "./_components/SearchBar"
 import Link from "next/link"
 import { getServerSession } from "next-auth"
 import { authOptions } from "./_lib/auth"
+import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
 
 const Home = async () => {
   const session = await getServerSession(authOptions)
@@ -46,8 +48,18 @@ const Home = async () => {
     <div>
       <Header />
       <div className="p-5">
-        <h2 className="text-xl font-bold">Olá, Diego!</h2>
-        <p>Sábado, 10 de maio.</p>
+        <h2 className="text-xl font-bold">
+          Olá, {session?.user ? session.user.name?.split(" ")[0] : "Bem Vindo"}!
+        </h2>
+        <p>
+          <span className="capitalize">
+            {format(new Date(), "EEEE, dd ", { locale: ptBR })}
+          </span>{" "}
+          de{" "}
+          <span className="capitalize">
+            {format(new Date(), "MMMM", { locale: ptBR })}
+          </span>
+        </p>
 
         <div className="mt-6">
           <SearchBar />
@@ -91,7 +103,8 @@ const Home = async () => {
             <div className="flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
               {bookings.map((booking) => (
                 <div
-                  className={bookings.length > 1 ? "min-w-[80%]" : "min-w-full"} key={booking.id}
+                  className={bookings.length > 1 ? "min-w-[80%]" : "min-w-full"}
+                  key={booking.id}
                 >
                   <BookingItem key={booking.id} booking={booking} />
                 </div>
