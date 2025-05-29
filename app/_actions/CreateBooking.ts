@@ -16,7 +16,7 @@ export const createBooking = async(params: CreateBookingParams) => {
         throw new Error("Usuario não logado")
     }
     await db.booking.create({
-        data: {...params, userId: (user.user as any).id}, // eslint-disable-line
+        data: {...params, userId: (user.user as any).id}, 
     }) 
     revalidatePath("/barbershops/[id]")
     revalidatePath("/bookings")
