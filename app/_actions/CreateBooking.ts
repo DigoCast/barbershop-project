@@ -19,4 +19,5 @@ export const createBooking = async(params: CreateBookingParams) => {
         data: {...params, userId: (user.user as any).id}, // eslint-disable-line
     }) 
     revalidatePath("/barbershops/[id]")
+    revalidatePath("/bookings")
 }

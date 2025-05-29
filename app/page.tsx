@@ -21,24 +21,26 @@ const Home = async () => {
     },
   })
 
-  const bookings = session?.user ? await db.booking.findMany({
-     where: {
-      userId: (session?.user as any).id, // eslint-disable-line
-      date: {
-        gte: new Date(),
-      },
-    },
-    include: {
-      service: {
-        include: {
-          barbershop: true,
+  const bookings = session?.user
+    ? await db.booking.findMany({
+        where: {
+          userId: (session?.user as any).id, // eslint-disable-line
+          date: {
+            gte: new Date(),
+          },
         },
-      },
-    },
-    orderBy: {
-      date:"asc"
-    }
-  }) : []
+        include: {
+          service: {
+            include: {
+              barbershop: true,
+            },
+          },
+        },
+        orderBy: {
+          date: "asc",
+        },
+      })
+    : []
 
   return (
     <div>
@@ -53,7 +55,12 @@ const Home = async () => {
 
         <div className="mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
           {quickSearchOptions.map((option) => (
-            <Button className="gap-2" variant="secondary" key={option.title} asChild>
+            <Button
+              className="gap-2"
+              variant="secondary"
+              key={option.title}
+              asChild
+            >
               <Link href={`/barbershops?service=${option.title}`}>
                 <Image
                   alt={option.title}
@@ -76,14 +83,22 @@ const Home = async () => {
           />
         </div>
 
-        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
-          Agendamentos
-        </h2>
-        <div className="flex overflow-x-auto gap-3 [&::-webkit-scrollbar]:hidden">
-          {bookings.map((booking) => (
-            <BookingItem key={booking.id} booking={booking} />
-          ))}
-        </div>
+        {bookings.length > 0 && (
+          <>
+            <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+              Agendamentos
+            </h2>
+            <div className="flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+              {bookings.map((booking) => (
+                <div
+                  className={bookings.length > 1 ? "min-w-[80%]" : "min-w-full"} key={booking.id}
+                >
+                  <BookingItem key={booking.id} booking={booking} />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Recomendados
