@@ -30,6 +30,7 @@ import {
 } from "./ui/dialog"
 import { deleteBooking } from "../_actions/deleteBooking"
 import { toast } from "sonner"
+import BookingSumary from "./BookingSumary"
 
 interface BookingItemProps {
   booking: Prisma.BookingGetPayload<{
@@ -128,40 +129,14 @@ const BookingItem = ({ booking }: BookingItemProps) => {
           >
             {isConfirmed ? "Confirmado" : "Finalizado"}
           </Badge>
-          <Card className="mb-6 mt-3">
-            <CardContent className="space-y-3 p-3">
-              <div className="flex items-center justify-between">
-                <h2 className="font-bold">{booking.service.name}</h2>
-                <p className="text-sm font-bold">
-                  {Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  }).format(Number(booking.service.price))}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm text-gray-400">Data</h2>
-                <p className="text-sm">
-                  {format(booking.date, "d 'de' MMMM", {
-                    locale: ptBR,
-                  })}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm text-gray-400">Horário</h2>
-                <p className="text-sm">
-                  {format(booking.date, "HH:mm", { locale: ptBR })}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm text-gray-400">Barbearia</h2>
-                <p className="text-sm">{barbershop.name}</p>
-              </div>
-            </CardContent>
-          </Card>
+          
+          <div className="mb-3 mt-6">
+            <BookingSumary
+              barbershop={barbershop}
+              service={booking.service}
+              selectedDate={booking.date}
+            />
+          </div>
 
           <div className="space-y-3">
             {barbershop.phones.map((phone, index) => (
@@ -186,7 +161,8 @@ const BookingItem = ({ booking }: BookingItemProps) => {
                 <DialogContent className="w-[80%] rounded-xl">
                   <DialogHeader>
                     <DialogTitle>
-                      Você quer cancelar sua reserva de &quot;{booking.service.name}&quot;?
+                      Você quer cancelar sua reserva de &quot;
+                      {booking.service.name}&quot;?
                     </DialogTitle>
                     <DialogDescription>
                       Tem certeza que deseja cancelar? esta ação é irreversível!

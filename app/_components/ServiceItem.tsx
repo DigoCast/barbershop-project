@@ -14,13 +14,14 @@ import {
 import { Calendar } from "./ui/calendar"
 import { ptBR } from "date-fns/locale"
 import { useEffect, useMemo, useState } from "react"
-import { format, isPast, isToday, set } from "date-fns"
+import { isPast, isToday, set } from "date-fns"
 import { createBooking } from "../_actions/CreateBooking"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
 import { getBookings } from "../_actions/getBookings"
 import { Dialog, DialogContent } from "./ui/dialog"
 import SignInDialog from "./SignInDialog"
+import BookingSumary from "./BookingSumary"
 
 interface ServiceItemProps {
   service: BarbershopService
@@ -51,19 +52,19 @@ const TIME_LIST = [
   "18:00",
 ]
 
-interface GetTimeListProps{
-  bookings: Booking[],
+interface GetTimeListProps {
+  bookings: Booking[]
   selectedDay: Date
 }
 
-const getTimeList = ({bookings, selectedDay}:GetTimeListProps) => {
+const getTimeList = ({ bookings, selectedDay }: GetTimeListProps) => {
   return TIME_LIST.filter((time) => {
     const hour = Number(time.split(":")[0])
     const minutes = Number(time.split(":")[1])
 
-    const timeIsOnThePast = isPast(set(new Date(), {hours: hour, minutes}))
+    const timeIsOnThePast = isPast(set(new Date(), { hours: hour, minutes }))
 
-    if(timeIsOnThePast && isToday(selectedDay)) {
+    if (timeIsOnThePast && isToday(selectedDay)) {
       return false
     }
 
@@ -103,6 +104,14 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
     fetch()
   }, [selectedDay, service.id])
 
+  const selectedDate = useMemo(() => {
+    if(!selectedDay || !selectedTime) return;
+    return set(selectedDay, {
+      hours: Number(selectedTime?.split(":")[0]),
+      minutes: Number(selectedTime?.split(":")[1]),
+    })
+  }, [selectedDay, selectedTime])
+
   const handleBookingClick = () => {
     if (data?.user) {
       return setBookingSheetIsOpen(true)
@@ -127,13 +136,10 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
 
   const handleCreateBooking = async () => {
     try {
-      if (!selectedDay || !selectedTime) return
-      const hour = Number(selectedTime.split(":")[0])
-      const minute = Number(selectedTime.split(":")[1])
-      const newDate = set(selectedDay, { minutes: minute, hours: hour })
+      if (!selectedDate) return
       await createBooking({
         serviceId: service.id,
-        date: newDate,
+        date: selectedDate,
       })
       toast.success("Horario Confirmado!")
       handleBookingSheetOpenChange()
@@ -144,7 +150,7 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
   }
 
   const timeList = useMemo(() => {
-    if(!selectedDay) return []
+    if (!selectedDay) return []
     return getTimeList({
       bookings: dayBookings,
       selectedDay,
@@ -227,55 +233,34 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
 
                   {selectedDay && (
                     <div className="flex gap-3 overflow-x-auto border-b border-solid p-5 [&::-webkit-scrollbar]:hidden">
-                      {timeList.length > 0 ? timeList.map((time) => (
-                        <Button
-                          key={time}
-                          variant={
-                            selectedTime === time ? "default" : "outline"
-                          }
-                          className="rounded-full"
-                          onClick={() => handleSelectedTime(time)}
-                        >
-                          {time}
-                        </Button>
-                      )) : <p className="text-xs">Não temos horários disponivel para esse dia.</p>}
+                      {timeList.length > 0 ? (
+                        timeList.map((time) => (
+                          <Button
+                            key={time}
+                            variant={
+                              selectedTime === time ? "default" : "outline"
+                            }
+                            className="rounded-full"
+                            onClick={() => handleSelectedTime(time)}
+                          >
+                            {time}
+                          </Button>
+                        ))
+                      ) : (
+                        <p className="text-xs">
+                          Não temos horários disponivel para esse dia.
+                        </p>
+                      )}
                     </div>
                   )}
 
-                  {selectedTime && selectedDay && (
+                  {selectedDate && (
                     <div className="p-5">
-                      <Card>
-                        <CardContent className="space-y-3 p-3">
-                          <div className="flex items-center justify-between">
-                            <h2 className="font-bold">{service.name}</h2>
-                            <p className="text-sm font-bold">
-                              {Intl.NumberFormat("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                              }).format(Number(service.price))}
-                            </p>
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <h2 className="text-sm text-gray-400">Data</h2>
-                            <p className="text-sm">
-                              {format(selectedDay, "d 'de' MMMM", {
-                                locale: ptBR,
-                              })}
-                            </p>
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <h2 className="text-sm text-gray-400">Horário</h2>
-                            <p className="text-sm">{selectedTime}</p>
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <h2 className="text-sm text-gray-400">Barbearia</h2>
-                            <p className="text-sm">{barbershop.name}</p>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <BookingSumary
+                        barbershop={barbershop}
+                        service={service}
+                        selectedDate={selectedDate}
+                      />
                     </div>
                   )}
                   <SheetFooter className="mt-5 px-5">
